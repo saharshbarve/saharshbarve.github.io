@@ -241,6 +241,10 @@ main { padding-block: var(--space-section); }
 }
 .affiliation:hover .affiliation__logo { transform: translateY(-2px); }
 
+/* Marks that carry a crest as well as a wordmark read visually heavier than a
+   plain wordmark at the same height, so they get dialled back. */
+.affiliation__logo--sm { height: 2.15rem; }
+
 /* Dark mode: most marks are dark-on-transparent and would vanish, so give them
    a light plate rather than inverting the artwork. */
 :root[data-theme="dark"] .affiliation__logo {
