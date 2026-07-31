@@ -212,54 +212,67 @@ main { padding-block: var(--space-section); }
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-start;
-  gap: clamp(1.2rem, 0.2rem + 2.6vw, 2.6rem);
+  justify-content: space-between;
+  gap: 1.5rem;
   margin: 0;
-  padding: 0.35rem 0 0.5rem;
+  padding: 1.5rem 0 0.5rem;
   list-style: none;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.affiliations::-webkit-scrollbar { display: none; }
-.affiliations > li { flex: none; }
 
+/* Each mark keeps its natural proportions — a fixed plate made the row read as
+   a spreadsheet. What is shared is the invisible band the logo is centred in,
+   which is enough to put every label on the same line without boxing anything. */
 .affiliation {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 2.75rem auto;
+  justify-items: center;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.75rem;
+  width: 7rem;
   color: var(--color-text);
   text-align: center;
 }
 .affiliation:hover { opacity: 1; }
 
 .affiliation__logo {
-  height: 2.9rem;
+  max-height: 2.6rem;
+  max-width: 100%;
   width: auto;
-  max-width: 9.5rem;
-  object-fit: contain;
-  transition: transform var(--duration) var(--ease);
+  height: auto;
+  opacity: 0.9;
+  mix-blend-mode: multiply;
+  transition: opacity var(--duration) var(--ease),
+              transform var(--duration) var(--ease);
 }
-.affiliation:hover .affiliation__logo { transform: translateY(-2px); }
+.affiliation:hover .affiliation__logo { opacity: 1; transform: translateY(-2px); }
 
-/* Dark mode: most marks are dark-on-transparent and would vanish, so give them
-   a light plate rather than inverting the artwork. */
+/* Optical sizing: a wordmark set to the same height as a square crest reads far
+   heavier, because it carries that height across its whole width. */
+.affiliation__logo--wide  { max-height: 1.95rem; }
+.affiliation__logo--mid   { max-height: 1.5rem; }
+.affiliation__logo--xwide { max-height: 1.3rem; }
+
+/* Dark backgrounds swallow the dark wordmarks. Lifting them with a soft,
+   borderless backdrop keeps the row from turning into a set of framed tiles. */
 :root[data-theme="dark"] .affiliation__logo {
-  background: #fff;
-  border-radius: 7px;
-  padding: 5px 7px;
+  mix-blend-mode: normal;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 6px;
+  padding: 5px 8px;
 }
 
 .affiliation__label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   line-height: 1.35;
   color: var(--color-muted);
-  white-space: nowrap;
 }
 .affiliation__label b {
   display: block;
+  margin-bottom: 0.1rem;
   color: var(--color-text);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  line-height: 1.25;
 }
 
 /* ============================================================================
