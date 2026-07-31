@@ -1,0 +1,41 @@
+name: Clean up preview
+
+# Previews are disposable. Without this they accumulate in gh-pages forever.
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: preview-${{ github.event.number }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove the PR's preview directory
+        env:
+          PR: ${{ github.event.number }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          publish="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+            "$publish"
+
+          cd "$publish"
+          if [ ! -d "preview/pr-$PR" ]; then
+            echo "Nothing to clean."
+            exit 0
+          fi
+          rm -rf "preview/pr-$PR"
+          git add -A
+          git commit -m "preview: remove pr-$PR"
+          git push origin gh-pages

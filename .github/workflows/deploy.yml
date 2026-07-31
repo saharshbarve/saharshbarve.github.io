@@ -1,0 +1,58 @@
+name: Deploy site
+
+# Merging to main publishes the live site. src/ is published verbatim — there is
+# no build step — so "deploy" is a validated copy into the gh-pages branch.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-publish
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Validate
+        run: ./scripts/validate.sh
+
+      - name: Publish to gh-pages
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          publish="$(mktemp -d)"
+          git clone --depth 1 --branch gh-pages \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+            "$publish" 2>/dev/null || {
+              git clone --depth 1 \
+                "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" \
+                "$publish"
+              git -C "$publish" checkout --orphan gh-pages
+              git -C "$publish" rm -rf . >/dev/null
+            }
+
+          # Replace the site root but keep PR previews, which live alongside it.
+          find "$publish" -mindepth 1 -maxdepth 1 \
+            ! -name .git ! -name preview -exec rm -rf {} +
+          cp -R src/. "$publish/"
+          touch "$publish/.nojekyll"   # serve _-prefixed paths verbatim
+
+          cd "$publish"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No change to publish."
+            exit 0
+          fi
+          git commit -m "deploy: ${{ github.sha }}"
+          git push origin gh-pages
