@@ -204,17 +204,18 @@ main { padding-block: var(--space-section); }
 }
 
 /* ============================================================================
-   Affiliations — one row, always. Overflow scrolls rather than wrapping into a
-   ragged second line.
+   Affiliations — a grid, not a fixed row. auto-fit keeps all seven on one line
+   at desktop width and reflows them to three-up on a phone; the previous nowrap
+   row was ~880px of fixed columns that simply ran off a small viewport.
    ========================================================================== */
 
-/* A grid rather than a nowrap row: at desktop width auto-fit still lays all
-   seven out on one line, but on a phone it reflows to three-up instead of
-   running off the side of the viewport. */
 .affiliations {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
   justify-items: center;
+  /* Grid defaults to stretch, which would let a wrapped label in one cell set
+     the height of every sibling in that row. */
+  align-items: start;
   gap: 1.75rem 1rem;
   margin: 0;
   padding: 1.5rem 0 0.5rem;
