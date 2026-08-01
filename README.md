@@ -58,7 +58,9 @@ The PDF is built in the private [`resume`](https://github.com/saharshbarve/resum
 repo. Copy the latest build over and open a PR:
 
 ```bash
-cp ../resume/saharsh_barve_resume_*.pdf src/assets/resume/saharsh_barve_resume.pdf
+cp ../resume/saharsh_barve_resume_1page_*.pdf src/assets/resume/saharsh_barve_resume.pdf
 ```
 
-The filename here is intentionally undated so the nav link never breaks.
+The **one-page** build is what the site serves — a visitor clicking `resume`
+wants the scannable version, not the full CV. The filename here is intentionally
+undated so the nav link never breaks.
